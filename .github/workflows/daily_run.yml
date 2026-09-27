@@ -1,0 +1,45 @@
+name: Bite-Sized News Scraper
+
+on:
+  schedule:
+    # Runs every 6 hours
+    - cron: '0 */6 * * *'
+  workflow_dispatch: # Allows manual triggering from the GitHub UI
+
+jobs:
+  scrape-and-summarize:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        working-directory: ./scraper
+        run: npm install
+
+      - name: Install Playwright Browsers
+        working-directory: ./scraper
+        run: npx playwright install chromium --with-deps
+
+      - name: Run Scraper
+        working-directory: ./scraper
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+          # Map up to 10 Gemini keys from GitHub Secrets to support rotation
+          GEMINI_KEY_1: ${{ secrets.GEMINI_KEY_1 }}
+          GEMINI_KEY_2: ${{ secrets.GEMINI_KEY_2 }}
+          GEMINI_KEY_3: ${{ secrets.GEMINI_KEY_3 }}
+          GEMINI_KEY_4: ${{ secrets.GEMINI_KEY_4 }}
+          GEMINI_KEY_5: ${{ secrets.GEMINI_KEY_5 }}
+          GEMINI_KEY_6: ${{ secrets.GEMINI_KEY_6 }}
+          GEMINI_KEY_7: ${{ secrets.GEMINI_KEY_7 }}
+          GEMINI_KEY_8: ${{ secrets.GEMINI_KEY_8 }}
+          GEMINI_KEY_9: ${{ secrets.GEMINI_KEY_9 }}
+          GEMINI_KEY_10: ${{ secrets.GEMINI_KEY_10 }}
+        run: node index.js

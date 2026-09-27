@@ -1,0 +1,47 @@
+
+--- Evaluating Article: Data Point News Example ---
+Schema Pass: true
+Word Count: 72 (Pass: true)
+Semantic Similarity (Cosine): 0.8319
+Overall Result: PASS
+
+--- Evaluating Article: Assam News Example ---
+Schema Pass: true
+Word Count: 71 (Pass: true)
+Semantic Similarity (Cosine): 0.7727
+Overall Result: PASS
+
+--- Evaluating Article: Editorial Opinion News Example ---
+Schema Pass: true
+Word Count: 66 (Pass: true)
+Semantic Similarity (Cosine): 0.6420
+Overall Result: PASS
+
+--- Evaluating Article: Education News Example ---
+Schema Pass: true
+Word Count: 75 (Pass: true)
+Semantic Similarity (Cosine): 0.7731
+Overall Result: PASS
+
+--- Evaluating Article: National News Example ---
+Schema Pass: true
+Word Count: 77 (Pass: true)
+Semantic Similarity (Cosine): 0.7851
+Overall Result: PASS
+
+--- Evaluating Article: World News Example ---
+Schema Pass: true
+Word Count: 72 (Pass: true)
+Semantic Similarity (Cosine): 0.7912
+Overall Result: PASS
+
+--- Evaluating Article: Industry News Example ---
+Schema Pass: true
+Word Count: 68 (Pass: true)
+Semantic Similarity (Cosine): 0.9342
+Overall Result: PASS
+
+=== Evaluation Complete ===
+Total: 7
+Passed: 7
+Failed: 0
