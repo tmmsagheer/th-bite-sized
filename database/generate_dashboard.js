@@ -32,7 +32,20 @@ async function generateReport() {
     const bugsRes = await dbClient.query('SELECT COUNT(*) FROM bug_reports');
     const totalBugs = bugsRes.rows[0].count;
 
-    // 4. Article count by date
+    // 4. Articles processed recently (last 6 and 24 hours)
+    const recent6hRes = await dbClient.query("SELECT COUNT(*) FROM articles WHERE created_at > NOW() - INTERVAL '6 hours' AND status = 'success'");
+    const recent6h = recent6hRes.rows[0].count;
+
+    const recent24hRes = await dbClient.query("SELECT COUNT(*) FROM articles WHERE created_at > NOW() - INTERVAL '24 hours' AND status = 'success'");
+    const recent24h = recent24hRes.rows[0].count;
+
+    // 5. Category Breakdown
+    const categoryRes = await dbClient.query("SELECT category, COUNT(*) FROM articles WHERE status = 'success' AND category IS NOT NULL GROUP BY category ORDER BY count DESC");
+
+    // 6. Recent Bugs
+    const recentBugsRes = await dbClient.query("SELECT created_at, user_comment FROM bug_reports ORDER BY created_at DESC LIMIT 5");
+
+    // 7. Article count by publish date
     const dateRes = await dbClient.query(`
       SELECT CAST(published_at AS DATE) as pub_date, COUNT(*) 
       FROM articles 
@@ -56,56 +69,97 @@ async function generateReport() {
         table { width: 100%; border-collapse: collapse; margin-top: 10px; }
         th, td { text-align: left; padding: 12px; border-bottom: 1px solid #ddd; }
         th { background-color: #f8f9fa; }
-        .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
-        .stat-box { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); text-align: center; }
-        .stat-title { font-size: 14px; text-transform: uppercase; color: #666; letter-spacing: 0.5px; }
-        .stat-num { font-size: 38px; font-weight: bold; margin-top: 10px; color: #007aff; }
+        .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .stat-box { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); text-align: center; border-bottom: 4px solid #007aff; }
+        .stat-box.success-border { border-bottom-color: #34c759; }
+        .stat-box.warning-border { border-bottom-color: #ffcc00; }
+        .stat-box.error-border { border-bottom-color: #ff3b30; }
+        .stat-box.recent-border { border-bottom-color: #5856d6; }
+        .stat-title { font-size: 13px; text-transform: uppercase; color: #666; letter-spacing: 0.5px; font-weight: 600; }
+        .stat-num { font-size: 38px; font-weight: bold; margin-top: 10px; color: #333; }
         .error { color: #ff3b30; }
         .success { color: #34c759; }
-        .warning { color: #ffcc00; }
+        .warning { color: #d4a000; }
+        .grid-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .bug-item { padding: 12px; background: #fff5f5; border-left: 4px solid #ff3b30; margin-bottom: 10px; border-radius: 4px; }
+        .bug-date { font-size: 12px; color: #666; margin-bottom: 4px; }
       </style>
     </head>
     <body>
       <h1>📊 Bite-Sized News Dashboard</h1>
-      <p style="color: #666;">Generated at: ${new Date().toLocaleString()}</p>
+      <p style="color: #666; margin-bottom: 30px;">Generated at: ${new Date().toLocaleString()}</p>
       
       <div class="stat-grid">
-        <div class="stat-box">
+        <div class="stat-box success-border">
           <div class="stat-title">Total Processed URLs</div>
           <div class="stat-num">${totalArticles}</div>
         </div>
-        <div class="stat-box">
-          <div class="stat-title">Successfully Scraped</div>
-          <div class="stat-num success">${successful}</div>
+        <div class="stat-box recent-border">
+          <div class="stat-title">New Articles (Last 6h)</div>
+          <div class="stat-num">${recent6h}</div>
         </div>
-        <div class="stat-box">
+        <div class="stat-box recent-border">
+          <div class="stat-title">New Articles (Last 24h)</div>
+          <div class="stat-num">${recent24h}</div>
+        </div>
+        <div class="stat-box error-border">
           <div class="stat-title">Errors / Blocked</div>
           <div class="stat-num error">${errored} / ${premium}</div>
         </div>
-        <div class="stat-box">
-          <div class="stat-title">Reported Bugs</div>
-          <div class="stat-num warning">${totalBugs}</div>
-        </div>
       </div>
 
-      <div class="card" style="margin-top: 30px;">
-        <h2>📅 Articles by Publish Date</h2>
-        <table>
-          <thead>
-            <tr>
-              <th>Date</th>
-              <th>Article Count</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${dateRes.rows.map(r => `
+      <div class="grid-2col">
+        <div class="card">
+          <h2>🏷️ Article Breakdown by Category</h2>
+          <table>
+            <thead>
               <tr>
-                <td><strong>${new Date(r.pub_date).toLocaleDateString()}</strong></td>
-                <td>${r.count} articles</td>
+                <th>Category</th>
+                <th>Total Articles</th>
               </tr>
+            </thead>
+            <tbody>
+              ${categoryRes.rows.map(r => `
+                <tr>
+                  <td><strong>${r.category}</strong></td>
+                  <td>${r.count}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+
+        <div>
+          <div class="card">
+            <h2>📅 Daily Publish Timeline</h2>
+            <table>
+              <thead>
+                <tr>
+                  <th>Publish Date</th>
+                  <th>Articles Sourced</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${dateRes.rows.map(r => `
+                  <tr>
+                    <td>${new Date(r.pub_date).toLocaleDateString()}</td>
+                    <td>${r.count}</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+
+          <div class="card">
+            <h2>🐛 Recent Bug Reports (${totalBugs} total)</h2>
+            ${recentBugsRes.rows.length === 0 ? '<p>No bug reports yet! 🎉</p>' : recentBugsRes.rows.map(bug => `
+              <div class="bug-item">
+                <div class="bug-date">${new Date(bug.created_at).toLocaleString()}</div>
+                <div>${bug.user_comment || '<em>No description provided</em>'}</div>
+              </div>
             `).join('')}
-          </tbody>
-        </table>
+          </div>
+        </div>
       </div>
     </body>
     </html>
