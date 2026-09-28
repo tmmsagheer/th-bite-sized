@@ -253,7 +253,7 @@ async function processArticles() {
         
         const aiMetadata = await withRetryBackoff("Gemini Summary Generation", async () => {
           const model = genAI.getGenerativeModel({ model: "gemini-3.1-flash-lite" });
-          const prompt = `Analyze this article. Return ONLY a raw JSON object (no markdown formatting) with these exact keys: "summary" (a 2-sentence summary), "category" (1 word category like Politics, Sports, Tech), "tags" (an array of 3 relevant string tags).\n\nArticle Title: ${pageData.title}\n\n${pageData.text.substring(0, 3000)}`;
+          const prompt = `Analyze this article. Return ONLY a raw JSON object (no markdown formatting) with these exact keys: "summary" (a 2-sentence summary), "tags" (an array of 3 relevant string tags).\n\nArticle Title: ${pageData.title}\n\n${pageData.text.substring(0, 3000)}`;
           const result = await model.generateContent(prompt);
           const cleanedText = result.response.text().replace(/\`\`\`json/g, '').replace(/\`\`\`/g, '').trim();
           return JSON.parse(cleanedText);
@@ -270,7 +270,7 @@ async function processArticles() {
           title: pageData.title,
           url,
           summary: aiMetadata.summary,
-          category: aiMetadata.category,
+          category: category.name,
           tags: aiMetadata.tags,
           embedding: JSON.stringify(embeddingArray),
           status: 'success',

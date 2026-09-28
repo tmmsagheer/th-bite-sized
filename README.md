@@ -74,7 +74,7 @@ Scan the QR code with the **Expo Go** app on your iOS or Android device to previ
 To ensure the Gemini AI is consistently producing high-quality summaries, we have a custom evaluation suite built with `@xenova/transformers`.
 
 Located in the `eval/` directory, the script (`index.js`) processes a `golden_dataset.js` of news articles and asserts three strict conditions:
-1. **Schema Validation:** Ensures the AI outputs strictly parsable JSON matching the `summary`, `category`, and `tags` schema.
+1. **Schema Validation:** Ensures the AI outputs strictly parsable JSON matching the `summary` and `tags` schema.
 2. **Word Count Assertion:** The summary must strictly fall between **60 and 80 words**.
 3. **Semantic Similarity:** Uses a local `all-MiniLM-L6-v2` embedding model to calculate the Cosine Similarity between the original article and the AI summary (must be `>= 0.55`).
 

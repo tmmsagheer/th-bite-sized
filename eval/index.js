@@ -12,7 +12,6 @@ function getWordCount(str) {
 function validateSchema(data) {
   if (typeof data !== 'object' || data === null) return false;
   if (typeof data.summary !== 'string') return false;
-  if (typeof data.category !== 'string') return false;
   if (!Array.isArray(data.tags)) return false;
   return true;
 }
@@ -77,7 +76,7 @@ async function runEval() {
         const prompt = `You are a strict summarizer. 
 Provide a summary of the following text.
 Constraints:
-- Return ONLY a raw JSON object with keys: "summary" (string), "category" (string), "tags" (array of strings). Do not include markdown blocks.
+- Return ONLY a raw JSON object with keys: "summary" (string), "tags" (array of strings). Do not include markdown blocks.
 - The "summary" MUST be strictly between 60 and 80 words long.
 
 Text:
