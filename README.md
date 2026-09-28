@@ -1,5 +1,7 @@
 # Bite-Sized News 📰⚡
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 A TikTok-style, vertical-scrolling news aggregator that uses AI to summarize lengthy news articles into digestible, bite-sized cards.
 
 ## 🌟 Features
@@ -94,6 +96,3 @@ The scraper is configured to run automatically every 6 hours. To enable this:
 2. Go to your repository **Settings > Secrets and variables > Actions**.
 3. Add your `SUPABASE_DB_URL` and `GEMINI_KEY_*` variables as Repository Secrets.
 4. The workflow in `.github/workflows/daily_run.yml` will handle the rest!
-
-## 📜 License
-MIT
