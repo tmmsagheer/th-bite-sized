@@ -149,7 +149,14 @@ async function processArticles() {
     console.log(`\n=== Fetching latest from ${category.name} ===`);
     
     // 1. Fetch category page
-    await page.goto(category.url, { waitUntil: 'domcontentloaded', timeout: 30000 });
+    try {
+      await withRetryBackoff(`Loading Category Page: ${category.name}`, async () => {
+        await page.goto(category.url, { waitUntil: 'domcontentloaded', timeout: 45000 });
+      });
+    } catch (err) {
+      console.error(`Error loading category page for ${category.name} after retries: ${err.message}. Skipping...`);
+      continue;
+    }
     
     // 2. Extract article URLs (.ece)
     const categoryUrls = await page.evaluate(() => {

@@ -7,10 +7,11 @@ A TikTok-style, vertical-scrolling news aggregator that uses AI to summarize len
 ## 🌟 Features
 - **Infinite Vertical Feed:** Seamlessly swipe through news articles with a smooth, native-feeling UI.
 - **AI Summarization:** A custom Node.js scraper fetches daily news and uses the **Google Gemini AI API** to condense them into bite-sized summaries.
-- **Library & Bookmarks:** Save your favorite articles to a dedicated library and revisit them in a gorgeous standalone reading view.
+- **Library & Bookmarks:** Save your favorite articles to a dedicated library and revisit them in a standalone reading view.
 - **Haptic Feedback & Dark Mode:** A premium user experience featuring native haptics, dark-mode-first design, and fluid animations.
 - **Live Bug Reporting:** Built-in screen capturing via `react-native-view-shot` allows users to capture and submit bug reports directly to the database.
 - **Automated Pipeline:** Fully automated via **GitHub Actions** to scrape, summarize, and publish new articles every 6 hours.
+- **Resilient Architecture:** The Node.js scraper utilizes exponential backoff, rotating API keys, and smart retry loops to gracefully recover from network timeouts, bot blocks, and AI rate limits.
 
 ## 🛠️ Tech Stack
 - **Frontend:** React Native, Expo, Expo Router
