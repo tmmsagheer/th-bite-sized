@@ -95,9 +95,9 @@ async function withRetryBackoff(operationName, fn) {
       attempt++;
       console.error(`[Attempt ${attempt} failed] ${operationName}: ${error.message}`);
       
-      // Bail out immediately for 404 Not Found (retrying won't bring the article back)
-      if (error.message.includes('HTTP 404')) {
-        console.error(`Bailing out of retries for 404 error.`);
+      // Bail out immediately for 404 Not Found or Bot blocks (retrying won't fix it)
+      if (error.message.includes('HTTP 404') || error.message.includes('bot block')) {
+        console.error(`Bailing out of retries for unrecoverable error: ${error.message}`);
         throw error;
       }
 
@@ -156,6 +156,7 @@ async function processArticles() {
       return Array.from(document.querySelectorAll('a'))
         .map(a => a.href)
         .filter(href => href.endsWith('.ece'))
+        .filter(href => !href.toLowerCase().includes('live-update') && !href.toLowerCase().includes('live-blog'))
         .filter((value, index, self) => self.indexOf(value) === index); // unique
     });
 
@@ -251,7 +252,7 @@ async function processArticles() {
         console.log(`-> Free article detected. (Published: ${pageData.publishedAt})`);
         
         const aiMetadata = await withRetryBackoff("Gemini Summary Generation", async () => {
-          const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
+          const model = genAI.getGenerativeModel({ model: "gemini-3.1-flash-lite" });
           const prompt = `Analyze this article. Return ONLY a raw JSON object (no markdown formatting) with these exact keys: "summary" (a 2-sentence summary), "category" (1 word category like Politics, Sports, Tech), "tags" (an array of 3 relevant string tags).\n\nArticle Title: ${pageData.title}\n\n${pageData.text.substring(0, 3000)}`;
           const result = await model.generateContent(prompt);
           const cleanedText = result.response.text().replace(/\`\`\`json/g, '').replace(/\`\`\`/g, '').trim();
@@ -259,7 +260,7 @@ async function processArticles() {
         });
 
         const embeddingArray = await withRetryBackoff("Gemini Embedding Generation", async () => {
-          const embeddingModel = genAI.getGenerativeModel({ model: "gemini-embedding-2" });
+          const embeddingModel = genAI.getGenerativeModel({ model: "gemini-embedding-001" });
           const embeddingResult = await embeddingModel.embedContent(aiMetadata.summary + " " + pageData.text.substring(0, 1000));
           return embeddingResult.embedding.values.slice(0, 768);
         });

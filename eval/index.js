@@ -73,7 +73,7 @@ async function runEval() {
 
       // 1. Generate Summary using Gemini with Backoff
       const result = await withRetryBackoff("Gemini Summary Generation", async () => {
-        const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
+        const model = genAI.getGenerativeModel({ model: "gemini-3.1-flash-lite" });
         const prompt = `You are a strict summarizer. 
 Provide a summary of the following text.
 Constraints:

@@ -22,9 +22,21 @@ A TikTok-style, vertical-scrolling news aggregator that uses AI to summarize len
 ## 🚀 Getting Started
 
 ### 1. Database Setup (Supabase)
-1. Create a new Supabase project.
-2. Run the SQL schemas located in the `database/` directory to create the `articles`, `user_interactions`, and `bug_reports` tables.
-3. Obtain your Supabase Database connection string.
+1. Create a new Supabase project and obtain your Postgres Connection String.
+2. The `database/` directory contains Node.js helper scripts to programmatically apply schema changes. To set up your tables, install dependencies and run the scripts:
+   ```bash
+   cd database
+   npm install
+   node update_schema.js
+   node update_schema_date.js
+   node create_reports_table.js
+   ```
+   *These helper scripts automatically execute the necessary SQL to create the `articles`, `user_interactions`, and `bug_reports` tables.*
+
+3. **Analytics Dashboard:** You can generate a local HTML dashboard detailing your database statistics (successful articles, blocked bots, bug reports, and a timeline) by running:
+   ```bash
+   node generate_dashboard.js
+   ```
 
 ### 2. Environment Variables
 Create a `.env` file in the root of the project with the following keys:
