@@ -4,6 +4,10 @@
 
 A TikTok-style, vertical-scrolling news aggregator that uses AI to summarize lengthy news articles into digestible, bite-sized cards.
 
+## Workflow Overview
+<img width="1280" height="720" alt="Workflow_Animation" src="https://github.com/user-attachments/assets/8d1ea4a0-db83-42c0-a1df-ff20c754750d" />
+
+
 ## 🌟 Features
 - **Infinite Vertical Feed:** Seamlessly swipe through news articles with a smooth, native-feeling UI.
 - **AI Summarization:** A custom Node.js scraper fetches daily news and uses the **Google Gemini AI API** to condense them into bite-sized summaries.
